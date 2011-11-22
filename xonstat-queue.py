@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime, timedelta
-from flask import Flask, request
+from flask import Flask, request, abort
 from models import *
 from sqlalchemy import create_engine
 
@@ -16,7 +16,6 @@ initialize_db(engine)
 @app.route("/", methods=['POST'])
 def main():
     session = dbsession()
-
     try:
         req = Request()
         req.blind_id_header = request.headers['X-D0-Blind-Id-Detached-Signature']
@@ -28,8 +27,9 @@ def main():
         if not submit_request(req):
             session.add(req)
             session.commit()
-    except e:
+    except Exception as e:
         session.rollback()
+        abort(500)
 
     return "Success!"
 
@@ -45,26 +45,24 @@ def submit_request(req):
 
 
 def resubmit_loop():
-    while True:
-        session = dbsession()
-        try:
-            reqs = session.query(Request).\
-                    filter_by(next_check <= datetime.utcnow()).all()
+    session = dbsession()
+    try:
+        reqs = session.query(Request).\
+                filter_by(next_check <= datetime.utcnow()).all()
 
-            for req in reqs:
-                if submit_request(req):
-                    session.delete(req)
-                else:
-                    req.next_check = datetime.utcnow() + \
-                            timedelta(minutes=req.next_interval)
-                    req.next_interval = req.next_interval * 2
-                    session.add(req)
-            session.commit()
-        except e:
-            session.rollback()
+        for req in reqs:
+            if submit_request(req):
+                session.delete(req)
+            else:
+                req.next_check = datetime.utcnow() + \
+                        timedelta(minutes=req.next_interval)
+                req.next_interval = req.next_interval * 2
+                session.add(req)
+        session.commit()
+    except Exception as e:
+        session.rollback()
 
-        session.close()
-        time.sleep(60)
+    session.close()
 
 
 if __name__ == "__main__":
