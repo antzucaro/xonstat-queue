@@ -24,18 +24,22 @@ def log_request():
         req.next_check = datetime.utcnow() + timedelta(minutes=1)
         req.next_interval = 2
 
-        try_request(req)
-        session.add(req)
+        if not try_request(req):
+            session.add(req)
+            session.commit()
     except e:
         session.rollback()
 
-    session.commit()
     return "Success!"
 
 def try_request(req):
     headers = {'X-D0-Blind-Id-Detached-Signature':req.blind_id_header}
     r = requests.post(url=url, data=req.body, headers=headers)
 
+    if r.status_code != 200:
+        return False
+    else:
+        return True
 
 if __name__ == "__main__":
     app.run(debug=True)
