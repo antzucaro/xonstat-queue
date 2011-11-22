@@ -12,8 +12,9 @@ url = "http://127.0.0.1:6543/stats/submit"
 engine = create_engine('sqlite://', creator=connect)
 initialize_db(engine)
 
+
 @app.route("/", methods=['POST'])
-def log_request():
+def main():
     session = dbsession()
 
     try:
@@ -24,7 +25,7 @@ def log_request():
         req.next_check = datetime.utcnow() + timedelta(minutes=1)
         req.next_interval = 2
 
-        if not try_request(req):
+        if not submit_request(req):
             session.add(req)
             session.commit()
     except e:
@@ -32,7 +33,8 @@ def log_request():
 
     return "Success!"
 
-def try_request(req):
+
+def submit_request(req):
     headers = {'X-D0-Blind-Id-Detached-Signature':req.blind_id_header}
     r = requests.post(url=url, data=req.body, headers=headers)
 
@@ -40,6 +42,30 @@ def try_request(req):
         return False
     else:
         return True
+
+
+def resubmit_loop():
+    while True:
+        session = dbsession()
+        try:
+            reqs = session.query(Request).\
+                    filter_by(next_check <= datetime.utcnow()).all()
+
+            for req in reqs:
+                if submit_request(req):
+                    session.delete(req)
+                else:
+                    req.next_check = datetime.utcnow() + \
+                            timedelta(minutes=req.next_interval)
+                    req.next_interval = req.next_interval * 2
+                    session.add(req)
+            session.commit()
+        except e:
+            session.rollback()
+
+        session.close()
+        time.sleep(60)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
