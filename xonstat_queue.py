@@ -19,6 +19,7 @@ def main():
     try:
         req = Request()
         req.blind_id_header = request.headers['X-D0-Blind-Id-Detached-Signature']
+        req.ip_addr = request.remote_addr
         req.body = request.data
         req.create_dt = datetime.utcnow()
         req.next_check = datetime.utcnow() + timedelta(minutes=1)
