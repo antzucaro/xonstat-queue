@@ -1,5 +1,5 @@
 from datetime import datetime
-from xonstat_queue.py import *
+from xonstat_queue import *
 
 session = dbsession()
 
@@ -18,6 +18,8 @@ try:
                     format(req.request_id, req.ip_addr)
             session.delete(req)
         else:
+            print "Request {0} failed. Queuing it for later resubmission.".\
+                    format(req.request_id)
             req.next_check = datetime.utcnow() + \
                     timedelta(minutes=req.next_interval)
             req.next_interval = req.next_interval * 2
