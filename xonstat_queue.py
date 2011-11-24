@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime, timedelta
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from models import *
 from sqlalchemy import create_engine
 
@@ -13,7 +13,7 @@ engine = create_engine('sqlite://', creator=connect)
 initialize_db(engine)
 
 
-@app.route("/", methods=['POST'])
+@app.route("/submit", methods=['POST'])
 def main():
     session = dbsession()
     try:
@@ -33,6 +33,30 @@ def main():
         abort(500)
 
     return "Success!"
+
+
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    session = dbsession()
+    reqs = session.query(Request).all()
+    session.close()
+    if request.method == 'POST':
+        print request.form.getlist('requests')
+    return render_template('index.jinja', reqs=reqs)
+
+
+@app.route("/request/<int:request_id>")
+def request_info(request_id):
+    session = dbsession()
+
+    try:
+        req = session.query(Request).\
+                filter(Request.request_id==request_id).one()
+    except:
+        req = None
+
+    return render_template('request_info.jinja', req=req)
+
 
 
 def submit_request(req):

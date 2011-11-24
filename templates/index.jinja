@@ -1,0 +1,29 @@
+<html>
+<head>
+    <title>Queue Index</title>
+</head>
+<body>
+    <h1>Request Queue</h1>
+    <form action="/" method="post">
+        <table border="1">
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Request ID</th>
+                    <th>Remote IP Address</th>
+                    <th>Next Resubmit Time</th>
+                </tr>
+                {% for req in reqs %}
+                <tr>
+                    <td><input type="checkbox" name="requests" value="{{req.request_id}}"></td>
+                    <td><a href="{{url_for('request_info', request_id=req.request_id)}}">{{req.request_id}}</a></td>
+                    <td>{{req.ip_addr}}</td>
+                    <td>{{req.next_check}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <input type="submit" name="form_submit" value="Submit" />
+    </form>
+</body>
+</html>

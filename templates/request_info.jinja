@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>XonStat Queue - Index</title>
+</head>
+<body>
+{% if req %}
+    <h1>Request Information</h1>
+    Request ID: {{req.request_id}} <br />
+    Blind ID: {{req.blind_id_header}} <br />
+    IP Address: {{req.ip_addr}} <br />
+    Next Check: {{req.next_check}} <br />
+    Body: <br />{{req.body}}
+{% else %}
+    <p>No request found!</p>
+{% endif %}
+</body>
+</html>
