@@ -5,11 +5,30 @@
 <body>
 {% if req %}
     <h1>Request Information</h1>
-    Request ID: {{req.request_id}} <br />
-    Blind ID: {{req.blind_id_header}} <br />
-    IP Address: {{req.ip_addr}} <br />
-    Next Check: {{req.next_check}} <br />
-    Body: <br />{{req.body}}
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>Request ID</b></td>
+                <td>{{req.request_id}}</td>
+            </tr>
+            <tr>
+                <td><b>Blind ID</b></td>
+                <td><pre>{{req.blind_id_header}}</pre></td>
+            </tr>
+            <tr>
+                <td><b>IP Address</b></td>
+                <td>{{req.ip_addr}}</td>
+            </tr>
+            <tr>
+                <td><b>Next Check</b></td>
+                <td>{{req.next_check}}</td>
+            </tr>
+            <tr>
+                <td><b>Body</b></td>
+                <td><pre>{{req.body.decode('utf-8')}}</td>
+            </tr>
+        </tbody>
+    </table>
 {% else %}
     <p>No request found!</p>
 {% endif %}
