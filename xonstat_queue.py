@@ -1,10 +1,14 @@
 import requests
 from datetime import datetime, timedelta
 from flask import Flask, request, abort, render_template
+from flaskext.login import LoginManager
 from models import *
 from sqlalchemy import create_engine
 
 app = Flask(__name__)
+
+login_manager = LoginManager()
+login_manager.setup_app(app)
 
 url = "http://127.0.0.1:6543/stats/submit"
 
@@ -71,6 +75,20 @@ def submit_request(req):
             return True
     except Exception as e:
         return False
+
+
+@login_manager.user_loader
+def load_user(userid):
+    session = dbsession()
+
+    try:
+        user = session.query(User).filter(User.user_id==int(userid)).one()
+    except:
+        user = None
+
+    session.close()
+
+    return user
 
 
 if __name__ == "__main__":
