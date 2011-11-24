@@ -1,5 +1,5 @@
 import sqlite3
-from sqlalchemy import Column, Integer, MetaData, String
+from sqlalchemy import Boolean, Column, Integer, MetaData, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.types import BigInteger, DateTime, Integer, Text
@@ -14,10 +14,32 @@ class Request(base):
 
     request_id = Column(Integer, primary_key=True, autoincrement=True)
     blind_id_header = Column(Text)
+    ip_addr = Column(String(length=32))
     body = Column(Text)
     create_dt = Column(DateTime)
     next_check = Column(DateTime)
     next_interval = Column(Integer)
+
+class User(base):
+    __tablename__ = 'users'
+    __table_args__ = {'sqlite_autoincrement':True}
+
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(length=30), unique=True)
+    password = Column(String(length=100))
+    active_ind = Column(Boolean, default=True)
+
+    def is_authenticated():
+        return None
+
+    def is_active():
+        return None
+
+    def is_anonymous():
+        return None
+
+    def get_id():
+        return unicode('')
 
 def connect():
     c = sqlite3.connect('queue.db')
