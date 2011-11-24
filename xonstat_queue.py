@@ -29,6 +29,7 @@ def main():
             session.add(req)
             session.commit()
     except Exception as e:
+        print e
         session.rollback()
         abort(500)
 
@@ -61,12 +62,15 @@ def request_info(request_id):
 
 def submit_request(req):
     headers = {'X-D0-Blind-Id-Detached-Signature':req.blind_id_header}
-    r = requests.post(url=url, data=req.body, headers=headers)
+    try:
+        r = requests.post(url=url, data=req.body, headers=headers)
 
-    if r.status_code != 200:
+        if r.status_code != 200:
+            return False
+        else:
+            return True
+    except Exception as e:
         return False
-    else:
-        return True
 
 
 if __name__ == "__main__":
