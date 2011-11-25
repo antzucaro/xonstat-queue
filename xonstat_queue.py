@@ -31,10 +31,24 @@ initialize_db(engine)
 @login_required
 def index():
     session = dbsession()
-    reqs = session.query(Request).all()
-    session.close()
     if request.method == 'POST':
-        print request.form.getlist('requests')
+        action = request.form.get('action')
+
+        for id in [int(str_id) for str_id in request.form.getlist('requests')]:
+            req = session.query(Request).filter(Request.request_id==id).one()
+            if action == 'resubmit':
+                if not submit_request(req):
+                    req.next_check = datetime.utcnow() + \
+                        timedelta(minutes=req.next_interval)
+                    req.next_interval = req.next_interval * 2
+                    session.add(req)
+
+            elif action == 'delete':
+                session.delete(req)
+
+
+    reqs = session.query(Request).all()
+    session.commit()
     return render_template('index.jinja', reqs=reqs, num_reqs=len(reqs))
 
 

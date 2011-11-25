@@ -24,7 +24,11 @@
                 {% endfor %}
             </tbody>
         </table>
-        <input type="submit" name="form_submit" value="Submit" />
+        <select name="action">
+            <option value="resubmit">Resubmit</option>
+            <option value="delete">Delete</option>
+        </select>
+        <input type="submit" name="form_submit" value="Go" />
     </form>
     {% else %}
     No requests in the queue. Pat yourself on the back!
