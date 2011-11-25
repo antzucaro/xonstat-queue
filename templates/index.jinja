@@ -4,6 +4,7 @@
 </head>
 <body>
     <h1>Request Queue</h1>
+    {% if num_reqs > 0 %}
     <form action="/" method="post">
         <table border="1">
             <tbody>
@@ -25,5 +26,8 @@
         </table>
         <input type="submit" name="form_submit" value="Submit" />
     </form>
+    {% else %}
+    No requests in the queue. Pat yourself on the back!
+    {% endif %}
 </body>
 </html>

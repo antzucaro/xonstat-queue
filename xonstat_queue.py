@@ -35,7 +35,7 @@ def index():
     session.close()
     if request.method == 'POST':
         print request.form.getlist('requests')
-    return render_template('index.jinja', reqs=reqs)
+    return render_template('index.jinja', reqs=reqs, num_reqs=len(reqs))
 
 
 @app.route("/submit", methods=['POST'])
