@@ -25,21 +25,22 @@ class User(base):
     __table_args__ = {'sqlite_autoincrement':True}
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(length=30), unique=True)
-    password = Column(String(length=100))
+    username = Column(String(length=30), default='', unique=True)
+    password = Column(String(length=100), default='')
     active_ind = Column(Boolean, default=True)
+    is_authenticated = False
 
-    def is_authenticated():
-        return None
+    def is_authenticated(self):
+        return self.is_authenticated
 
-    def is_active():
-        return None
+    def is_active(self):
+        return self.active_ind
 
-    def is_anonymous():
-        return None
+    def is_anonymous(self):
+        return self.username != ""
 
-    def get_id():
-        return unicode('')
+    def get_id(self):
+        return unicode(self.user_id)
 
 def connect():
     c = sqlite3.connect('queue.db')
