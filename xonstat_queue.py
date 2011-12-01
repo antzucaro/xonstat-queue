@@ -118,7 +118,8 @@ def request_info(request_id):
 # SUPPORTING FUNCTIONS
 ###############################################################################
 def submit_request(req):
-    headers = {'X-D0-Blind-Id-Detached-Signature':req.blind_id_header}
+    headers = {'X-D0-Blind-Id-Detached-Signature':req.blind_id_header,
+               'X-Server-IP':req.ip_addr}
     try:
         r = requests.post(url=url, data=req.body, headers=headers)
 
