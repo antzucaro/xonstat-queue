@@ -52,7 +52,7 @@ def index():
     return render_template('index.jinja', reqs=reqs, num_reqs=len(reqs))
 
 
-@app.route("/submit", methods=['POST'])
+@app.route("/stats/submit", methods=['POST'])
 def main():
     session = dbsession()
     try:
